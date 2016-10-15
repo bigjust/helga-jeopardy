@@ -3,8 +3,10 @@ import smokesignal
 
 from twisted.internet import reactor
 
+from helga import settings
 from helga.plugins import command
 
+ANSWER_DELAY = getattr(settings, 'JEOPARDY_ANSWER_DELAY', 60)
 
 api_endpoint = 'http://www.trivialbuzz.com/api/v1/'
 
@@ -21,7 +23,7 @@ def jeopardy(client, channel, nick, message, cmd, args):
         answer = tb_resp['response']
         category = tb_resp['category']['name']
 
-        reactor.callLater(30, reveal_answer, client, channel, answer)
+        reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, answer)
 
     except requests.exceptions.RequestException:
         return 'problem, check logs'
