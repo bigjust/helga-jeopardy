@@ -1,4 +1,5 @@
 import requests
+import smokesignal
 
 from twisted.internet import reactor
 
@@ -26,3 +27,8 @@ def jeopardy(client, channel, nick, message, cmd, args):
         return 'problem, check logs'
 
     return '[{}] {}'.format(category, question_text)
+
+
+@smokesignal.on('join')
+def back_from_commercial(client, channel):
+    client.msg(channel, 'aaaand we\'re back!')
