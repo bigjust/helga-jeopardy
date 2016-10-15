@@ -21,6 +21,7 @@ def jeopardy(client, channel, nick, message, cmd, args):
         tb_resp = requests.get('{}questions/random.json'.format(api_endpoint)).json()['question']
         question_text = tb_resp['body']
         answer = tb_resp['response']
+        value = tb_resp['value']
         category = tb_resp['category']['name']
 
         reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, answer)
@@ -28,7 +29,7 @@ def jeopardy(client, channel, nick, message, cmd, args):
     except requests.exceptions.RequestException:
         return 'problem, check logs'
 
-    return '[{}] {}'.format(category, question_text)
+    return '[{}] For ${}: {}'.format(category, value, question_text)
 
 
 @smokesignal.on('join')
