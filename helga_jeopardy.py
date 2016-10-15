@@ -17,12 +17,11 @@ def reveal_answer(client, channel, args):
 def jeopardy(client, channel, nick, message, cmd, args):
 
     try:
-
         tb_resp = requests.get('{}questions/random.json'.format(api_endpoint)).json()['question']
-        question_text = tb_resp['body']
+        question_text = tb_resp['body'][1:-1]
         answer = tb_resp['response']
-        value = tb_resp['value']
         category = tb_resp['category']['name']
+        value = tb_resp['value']
 
         reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, answer)
 
