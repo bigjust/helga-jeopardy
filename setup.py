@@ -18,12 +18,15 @@ setup(name="helga-jeopardy",
       author_email='bigjust@lambdaphil.es',
       license='LICENSE',
       packages=find_packages(),
+      install_requires = (
+          'requests>=2.0.0',
+      ),
       include_package_data=True,
       py_modules=['helga_jeopardy'],
       zip_safe=True,
       entry_points = dict(
           helga_plugins = [
-              'jeopardy= helga_jeopardy:jeopardy',
+              'jeopardy = helga_jeopardy:jeopardy',
           ],
       ),
 )
