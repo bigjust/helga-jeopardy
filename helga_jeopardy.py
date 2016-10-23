@@ -76,6 +76,9 @@ def jeopardy(client, channel, nick, message, cmd, args):
     if question and not args:
         return
 
+    if not question and args:
+        return
+
     try:
         tb_resp = requests.get('{}questions/random.json'.format(api_endpoint)).json()['question']
         question_text = tb_resp['body'][1:-1]
