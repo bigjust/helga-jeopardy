@@ -2,6 +2,7 @@ import nltk
 import random
 import requests
 import smokesignal
+import string
 
 from nltk.stem.snowball import EnglishStemmer
 
@@ -33,6 +34,27 @@ def reset_channel(channel):
         'active': True
         }, {'$set': {'active': False}})
 
+def process_token(token):
+    """
+    stuff we do to every token, both answer and responses.
+
+    1. lowercase
+    2. remove punctuation
+    3. stem
+
+    """
+
+    # lowercase
+    token = token.lower()
+
+    # punctuation
+    token = token.translate(string.maketrans('',''), string.punctuation)
+
+    # stem
+    stemmer = EnglishStemmer()
+    token = stemmer.stem(token)
+
+    return token
 
 def eval_potential_answer(input_line, answer):
     """
@@ -41,8 +63,8 @@ def eval_potential_answer(input_line, answer):
 
     stemmer = EnglishStemmer()
 
-    input_tokens = [stemmer.stem(token.lower()) for token in input_line]
-    answer_tokens = [stemmer.stem(tok) for tok in answer.lower().split()]
+    input_tokens = [process_token(token) for token in input_line]
+    answer_tokens = [process_token(token) for token in answer.split()]
 
     matched = set(input_tokens).intersection(set(answer_tokens))
 

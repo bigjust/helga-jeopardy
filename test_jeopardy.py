@@ -28,3 +28,10 @@ class TestAnswerMatching(unittest.TestCase):
     def test_stemming(self):
         self.answer = 'penny'
         self.assertAnswer('pennies')
+
+    def test_remove_punctuation(self):
+        self.answer = 'Baby, I Love Your Way'
+        self.assertAnswer('ooh baby i love your way')
+
+        self.answer = 'John F. Kennedy'
+        self.assertAnswer('john f kennedy')
