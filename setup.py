@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.1.1'
+version = '0.1.2'
 
 setup(name="helga-jeopardy",
       version=version,
@@ -19,6 +19,7 @@ setup(name="helga-jeopardy",
       packages=find_packages(),
       install_requires = (
           'requests>=2.0.0',
+          'nltk',
       ),
       include_package_data=True,
       py_modules=['helga_jeopardy'],

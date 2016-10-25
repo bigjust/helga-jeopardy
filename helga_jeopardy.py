@@ -1,5 +1,8 @@
+import nltk
 import requests
 import smokesignal
+
+from nltk.stem.snowball import EnglishStemmer
 
 from twisted.internet import reactor
 
@@ -29,8 +32,10 @@ def eval_potential_answer(input_line, answer):
     Checks if `input_line` is an match for `answer`
     """
 
-    input_tokens = [token.lower() for token in input_line]
-    answer_tokens = answer.lower().split()
+    stemmer = EnglishStemmer()
+
+    input_tokens = [stemmer.stem(token.lower()) for token in input_line]
+    answer_tokens = [stemmer.stem(tok) for tok in answer.lower().split()]
 
     matched = set(input_tokens).intersection(set(answer_tokens))
 

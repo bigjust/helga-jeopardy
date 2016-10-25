@@ -24,3 +24,7 @@ class TestAnswerMatching(unittest.TestCase):
 
     def test_case_insensitivty(self):
         self.assertAnswer('Winston Churchill')
+
+    def test_stemming(self):
+        self.answer = 'penny'
+        self.assertAnswer('pennies')
