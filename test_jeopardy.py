@@ -9,9 +9,8 @@ class TestAnswerMatching(unittest.TestCase):
         self.answer = 'winston churchill'
 
     def assertAnswer(self, input_line):
-        return self.assertTrue(
-            eval_potential_answer(input_line.split(), self.answer)
-        )
+        correct, _ = eval_potential_answer(input_line.split(), self.answer)
+        return self.assertTrue(correct)
 
     def test_exact_match(self):
         self.assertAnswer('winston churchill')
@@ -35,3 +34,12 @@ class TestAnswerMatching(unittest.TestCase):
 
         self.answer = 'John F. Kennedy'
         self.assertAnswer('john f kennedy')
+
+    def test_partial_match(self):
+        correct, partial = eval_potential_answer(
+            'kennedy'.split(),
+            'john f. kennedy'
+        )
+
+        self.assertTrue(partial)
+        self.assertFalse(correct)
