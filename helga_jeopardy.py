@@ -1,4 +1,5 @@
 import nltk
+import random
 import requests
 import smokesignal
 
