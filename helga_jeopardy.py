@@ -16,6 +16,12 @@ ANSWER_DELAY = getattr(settings, 'JEOPARDY_ANSWER_DELAY', 30)
 
 api_endpoint = 'http://www.trivialbuzz.com/api/v1/'
 
+correct_responses = [
+    'look at the big brains on {}',
+    '{}, you are correct.',
+    '{} takes it, and has control of the board.',
+]
+
 def reset_channel(channel):
     """
     For channel name, make sure no question is active.
@@ -73,7 +79,7 @@ def jeopardy(client, channel, nick, message, cmd, args):
     if question and args:
         if eval_potential_answer(args, question['answer']):
             reset_channel(channel)
-            return 'Look at the big brains on {}'.format(nick)
+            return random.choice(correct_responses).format(nick)
         else:
             # wrong answer, do nothing
             return
