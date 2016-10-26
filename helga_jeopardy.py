@@ -103,13 +103,14 @@ def jeopardy(client, channel, nick, message, cmd, args):
     if question and args:
         correct, partial = eval_potential_answer(args, question['answer'])
 
-        if partial > 0:
-            return "{}, can you be more specific?".format(nick)
-
         if correct:
             reset_channel(channel)
             return random.choice(correct_responses).format(nick)
 
+        if partial > 0:
+            return "{}, can you be more specific?".format(nick)
+
+        # wrong answer, ignore
         return
 
     if question and not args:
