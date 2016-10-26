@@ -67,10 +67,7 @@ def eval_potential_answer(input_line, answer):
     answer_tokens = [process_token(token) for token in answer.split()]
 
     matched = set(input_tokens).intersection(set(answer_tokens))
-    partial = False
-
-    if len(matched) > 0:
-        partial = True
+    partial = len(matched)
 
     if len(matched) == len(answer_tokens):
         return True, partial
@@ -105,14 +102,15 @@ def jeopardy(client, channel, nick, message, cmd, args):
 
     if question and args:
         correct, partial = eval_potential_answer(args, question['answer'])
+
+        if partial > 0:
+            return "{}, can you be more specific?".format(nick)
+
         if correct:
             reset_channel(channel)
             return random.choice(correct_responses).format(nick)
-        elif partial:
-            return "{}, can you be more specific?".format(nick)
-        else:
-            # wrong answer, do nothing
-            return
+
+        return
 
     if question and not args:
         return

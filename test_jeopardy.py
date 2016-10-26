@@ -37,9 +37,17 @@ class TestAnswerMatching(unittest.TestCase):
 
     def test_partial_match(self):
         correct, partial = eval_potential_answer(
-            'kennedy'.split(),
+            ['kennedy'],
             'john f. kennedy'
         )
 
         self.assertTrue(partial)
+        self.assertFalse(correct)
+
+        correct, partial = eval_potential_answer(
+            ['one', 'flew', 'over'],
+            'One Flew Over the Cuckoo\'s Nest'
+        )
+
+        self.assertEqual(partial, 3)
         self.assertFalse(correct)
