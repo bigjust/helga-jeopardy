@@ -34,6 +34,8 @@ def reset_channel(channel):
         'active': True
         }, {'$set': {'active': False}})
 
+remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
+
 def process_token(token):
     """
     stuff we do to every token, both answer and responses.
@@ -48,7 +50,11 @@ def process_token(token):
     token = token.lower()
 
     # punctuation
-    token = token.translate(string.maketrans('',''), string.punctuation)
+    if isinstance(token, str):
+        token = token.translate(string.maketrans('',''), string.punctuation)
+
+    if isinstance(token, unicode):
+        token = token.translate(remove_punctuation_map)
 
     # stem
     stemmer = EnglishStemmer()
