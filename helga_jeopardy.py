@@ -130,7 +130,8 @@ def retrieve_question(client, channel):
         'active': True,
     })
 
-    question = '[{}] For ${}: {} [{}]'.format(category, value, question_text, answer)
+    question = '[{}] For ${}: {}'.format(category, value, question_text)
+
     reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, question_text, answer)
 
     return question
