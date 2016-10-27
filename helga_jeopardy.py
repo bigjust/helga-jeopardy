@@ -80,9 +80,60 @@ def eval_potential_answer(input_line, answer):
 
     return False, partial
 
-def reveal_answer(client, channel, args):
-    client.msg(channel, 'the correct answer is: {}'.format(args))
-    reset_channel(channel)
+def reveal_answer(client, channel, question_text, answer):
+    """
+    This is the timer, essentially. When this point is reached, no more
+    answers will be accepted, and our gracious host will reveal the
+    answer in all of it's glory.
+    """
+
+    question = db.jeopardy.find_one({
+        'channel': channel,
+        'active': True,
+        'question': question_text,
+    })
+
+    if not question:
+        return
+
+    client.msg(channel, 'the correct answer is: {}'.format(answer))
+
+    db.jeopardy.update({
+        'channel': channel,
+        'question': question_text,
+    }, {'$set': {
+        'active': False,
+    }})
+
+
+def retrieve_question(client, channel):
+    """
+    Return the question and correct answer.
+
+    Adds question to the database, which is how it is tracked until
+    active=False.
+
+    """
+
+    tb_resp = requests.get('{}questions/random.json'.format(api_endpoint)).json()['question']
+    question_text = tb_resp['body'][1:-1]
+    answer = tb_resp['response']
+    category = tb_resp['category']['name']
+    value = tb_resp['value']
+
+    db.jeopardy.insert({
+        'id': tb_resp['id'],
+        'question': question_text,
+        'answer': answer,
+        'channel': channel,
+        'value': value,
+        'active': True,
+    })
+
+    question = '[{}] For ${}: {} [{}]'.format(category, value, question_text, answer)
+    reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, question_text, answer)
+
+    return question
 
 @command('j', help='jeopardy!')
 def jeopardy(client, channel, nick, message, cmd, args):
@@ -110,7 +161,12 @@ def jeopardy(client, channel, nick, message, cmd, args):
         correct, partial = eval_potential_answer(args, question['answer'])
 
         if correct:
-            reset_channel(channel)
+            db.jeopardy.update({
+                'question': question['question'],
+            }, {'$set': {
+                'active': False,
+            }})
+
             return random.choice(correct_responses).format(nick)
 
         if partial > 0:
@@ -125,26 +181,9 @@ def jeopardy(client, channel, nick, message, cmd, args):
     if not question and args:
         return
 
-    try:
-        tb_resp = requests.get('{}questions/random.json'.format(api_endpoint)).json()['question']
-        question_text = tb_resp['body'][1:-1]
-        answer = tb_resp['response']
-        category = tb_resp['category']['name']
-        value = tb_resp['value']
+    question_text = retrieve_question(client, channel)
 
-        db.jeopardy.insert({
-            'id': tb_resp['id'],
-            'answer': answer,
-            'channel': channel,
-            'active': True,
-        })
-
-        reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, answer)
-
-    except requests.exceptions.RequestException:
-        return 'problem, check logs'
-
-    return '[{}] For ${}: {}'.format(category, value, question_text)
+    return question_text
 
 
 @smokesignal.on('join')
