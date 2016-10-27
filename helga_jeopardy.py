@@ -11,7 +11,7 @@ from twisted.internet import reactor
 from helga import settings
 from helga.db import db
 from helga.log import get_channel_logger
-from helga.plugins import command, preprocessor
+from helga.plugins import command
 
 
 ANSWER_DELAY = getattr(settings, 'JEOPARDY_ANSWER_DELAY', 30)
@@ -122,7 +122,6 @@ def retrieve_question(client, channel):
     value = tb_resp['value']
 
     db.jeopardy.insert({
-        'id': tb_resp['id'],
         'question': question_text,
         'answer': answer,
         'channel': channel,
