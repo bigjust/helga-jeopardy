@@ -137,7 +137,7 @@ def retrieve_question(client, channel):
     return question
 
 @command('j', help='jeopardy!')
-def jeopardy(client, channel, nick, message, cmd, args):
+def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_question):
     """
     Asks a question if there is no active question in the channel.
 
@@ -182,7 +182,7 @@ def jeopardy(client, channel, nick, message, cmd, args):
     if not question and args:
         return
 
-    question_text = retrieve_question(client, channel)
+    question_text = quest_func(client, channel)
 
     return question_text
 
