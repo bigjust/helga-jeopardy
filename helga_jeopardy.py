@@ -80,14 +80,14 @@ def eval_potential_answer(input_line, answer):
 
     return False, partial
 
-def reveal_answer(client, channel, question_text, answer):
+def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
     """
     This is the timer, essentially. When this point is reached, no more
     answers will be accepted, and our gracious host will reveal the
     answer in all of it's glory.
     """
 
-    question = db.jeopardy.find_one({
+    question = mongo_db.find_one({
         'channel': channel,
         'active': True,
         'question': question_text,
@@ -98,7 +98,7 @@ def reveal_answer(client, channel, question_text, answer):
 
     client.msg(channel, 'the correct answer is: {}'.format(answer))
 
-    db.jeopardy.update({
+    mongo_db.update({
         'channel': channel,
         'question': question_text,
     }, {'$set': {
