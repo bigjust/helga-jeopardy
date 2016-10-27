@@ -6,9 +6,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [0.1.0] - 2016-10-23
+## [0.2.0] - 2016-10-26
+### Added
+- adding hooks so other plugins can run jeopardy type games
+
+### Fixed
+- unicode tokens now parse correctly
+
+
+## [0.1.3] - 2016-10-25
+useless version bump
+
+
+## [0.1.2] - 2016-10-23
 ### Added
 - tracks active questions per channel
+- allow multiple correct responses
+- improve matching, introduce partial response ('can you be more specific?')
+
+## [0.1.1] - 2016-10-23
 - attempts to determine if a person answered correct
 
 
