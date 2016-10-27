@@ -24,15 +24,17 @@ correct_responses = [
     '{} takes it, and has control of the board.',
 ]
 
-def reset_channel(channel):
+def reset_channel(channel, mongo_db=db.jeopardy):
     """
     For channel name, make sure no question is active.
     """
 
-    db.jeopardy.update_many({
+    mongo_db.update_many({
         'channel': channel,
         'active': True
-        }, {'$set': {'active': False}})
+    }, {'$set': {
+        'active': False
+    }})
 
 remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
 
@@ -136,7 +138,7 @@ def retrieve_question(client, channel):
     return question
 
 @command('j', help='jeopardy!')
-def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_question):
+def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_question, mongo_db=db.jeopardy):
     """
     Asks a question if there is no active question in the channel.
 
@@ -152,7 +154,7 @@ def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_ques
 
     # if we have an active question, and args, evaluate the answer
 
-    question = db.jeopardy.find_one({
+    question = mongo_db.find_one({
         'channel': channel,
         'active': True,
     })
@@ -161,7 +163,7 @@ def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_ques
         correct, partial = eval_potential_answer(args, question['answer'])
 
         if correct:
-            db.jeopardy.update({
+            mongo_db.update({
                 'question': question['question'],
             }, {'$set': {
                 'active': False,
