@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [0.2.0] - 2016-10-26
+## [0.2.0] - 2016-10-27
 ### Added
 - adding hooks so other plugins can run jeopardy type games
 
