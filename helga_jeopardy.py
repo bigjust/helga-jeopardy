@@ -4,6 +4,8 @@ import requests
 import smokesignal
 import string
 
+from difflib import SequenceMatcher
+
 from nltk.stem.snowball import EnglishStemmer
 
 from twisted.internet import reactor
@@ -14,6 +16,7 @@ from helga.log import get_channel_logger
 from helga.plugins import command
 
 
+DEBUG = getattr(settings, 'HELGA_DEBUG', False)
 ANSWER_DELAY = getattr(settings, 'JEOPARDY_ANSWER_DELAY', 30)
 
 api_endpoint = 'http://www.trivialbuzz.com/api/v1/'
@@ -67,7 +70,25 @@ def process_token(token):
 def eval_potential_answer(input_line, answer):
     """
     Checks if `input_line` is an match for `answer`
+
+    returns a 3 item tuple:
+    `bool`: True if correct
+    `partial`: number of tokens matched
+    `ratio`: ratio of matching characters
+
     """
+
+    correct = False
+    partial = 0
+    ratio = 0.0
+
+    input_string = ' '.join(input_line)
+
+    sequence_matcher = SequenceMatcher(None, input_string, answer)
+    ratio = sequence_matcher.ratio()
+
+    if ratio >= 0.75:
+        correct = True
 
     stemmer = EnglishStemmer()
 
@@ -78,9 +99,9 @@ def eval_potential_answer(input_line, answer):
     partial = len(matched)
 
     if len(matched) == len(answer_tokens):
-        return True, partial
+        correct = True
 
-    return False, partial
+    return correct, partial, ratio
 
 def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
     """
@@ -131,6 +152,9 @@ def retrieve_question(client, channel):
         'active': True,
     })
 
+    if DEBUG:
+        client.msg(channel, '[{}]'.format(answer))
+
     question = '[{}] For ${}: {}'.format(category, value, question_text)
 
     reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, question_text, answer)
@@ -160,7 +184,10 @@ def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_ques
     })
 
     if question and args:
-        correct, partial = eval_potential_answer(args, question['answer'])
+        correct, partial, ratio = eval_potential_answer(args, question['answer'])
+
+        if DEBUG:
+            client.msg(channel, 'ration = {}'.format(ratio))
 
         if correct:
             mongo_db.update({

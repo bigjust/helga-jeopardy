@@ -9,7 +9,7 @@ class TestAnswerMatching(unittest.TestCase):
         self.answer = 'winston churchill'
 
     def assertAnswer(self, input_line):
-        correct, _ = eval_potential_answer(input_line.split(), self.answer)
+        correct, _, _ = eval_potential_answer(input_line.split(), self.answer)
         return self.assertTrue(correct)
 
     def test_exact_match(self):
@@ -36,7 +36,7 @@ class TestAnswerMatching(unittest.TestCase):
         self.assertAnswer('john f kennedy')
 
     def test_partial_match(self):
-        correct, partial = eval_potential_answer(
+        correct, partial, _ = eval_potential_answer(
             ['kennedy'],
             'john f. kennedy'
         )
@@ -44,10 +44,20 @@ class TestAnswerMatching(unittest.TestCase):
         self.assertTrue(partial)
         self.assertFalse(correct)
 
-        correct, partial = eval_potential_answer(
+        correct, partial, _ = eval_potential_answer(
             ['one', 'flew', 'over'],
             'One Flew Over the Cuckoo\'s Nest'
         )
 
         self.assertEqual(partial, 3)
         self.assertFalse(correct)
+
+    def test_ratio_match(self):
+
+        correct, partial, ratio = eval_potential_answer(
+            ['man'],
+            'a man',
+        )
+
+        self.assertTrue(correct)
+        self.assertEqual(ratio, 0.75)
