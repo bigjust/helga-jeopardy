@@ -187,7 +187,7 @@ def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_ques
         correct, partial, ratio = eval_potential_answer(args, question['answer'])
 
         if DEBUG:
-            client.msg(channel, 'ration = {}'.format(ratio))
+            client.msg(channel, 'ratio = {}'.format(ratio))
 
         if correct:
             mongo_db.update({
