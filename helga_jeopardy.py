@@ -100,7 +100,6 @@ def eval_potential_answer(input_line, answer):
     matched = set(input_tokens).intersection(set(answer_tokens))
     partial = len(matched)
 
-    logger.debug('answer_tokens: {}'.format(answer_tokens))
     logger.debug('matched: {}'.format(matched))
     logger.debug('ratio: {}'.format(ratio))
 
@@ -157,7 +156,8 @@ def retrieve_question(client, channel):
     category = json_resp['category']['name']
     value = json_resp['value']
 
-    logger.debug('psst! the answer is: {}'.format(answer))
+    if DEBUG:
+        logger.debug('psst! the answer is: {}'.format(answer))
 
     db.jeopardy.insert({
         'question': question_text,
