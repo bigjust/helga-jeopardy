@@ -10,11 +10,11 @@ from nltk.stem.snowball import EnglishStemmer
 
 from twisted.internet import reactor
 
-from helga import settings
+from helga import settings, log
 from helga.db import db
-from helga.log import get_channel_logger
 from helga.plugins import command
 
+logger = log.getLogger(__name__)
 
 DEBUG = getattr(settings, 'HELGA_DEBUG', False)
 ANSWER_DELAY = getattr(settings, 'JEOPARDY_ANSWER_DELAY', 30)
@@ -31,6 +31,8 @@ def reset_channel(channel, mongo_db=db.jeopardy):
     """
     For channel name, make sure no question is active.
     """
+
+    logger.debug('resetting channel')
 
     mongo_db.update_many({
         'channel': channel,
@@ -98,6 +100,10 @@ def eval_potential_answer(input_line, answer):
     matched = set(input_tokens).intersection(set(answer_tokens))
     partial = len(matched)
 
+    logger.debug('answer_tokens: {}'.format(answer_tokens))
+    logger.debug('matched: {}'.format(matched))
+    logger.debug('ratio: {}'.format(ratio))
+
     if len(matched) == len(answer_tokens):
         correct = True
 
@@ -110,6 +116,8 @@ def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
     answer in all of it's glory.
     """
 
+    logger.debug('time to reveal the answer, if no one has guess')
+
     question = mongo_db.find_one({
         'channel': channel,
         'active': True,
@@ -117,6 +125,7 @@ def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
     })
 
     if not question:
+        logger.debug('no active question, someone must have answered it! Good Show!')
         return
 
     client.msg(channel, 'the correct answer is: {}'.format(answer))
@@ -124,9 +133,7 @@ def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
     mongo_db.update({
         'channel': channel,
         'question': question_text,
-    }, {'$set': {
-        'active': False,
-    }})
+    }, { '$set': { 'active': False, }})
 
 
 def retrieve_question(client, channel):
@@ -138,11 +145,19 @@ def retrieve_question(client, channel):
 
     """
 
-    tb_resp = requests.get('{}questions/random.json'.format(api_endpoint)).json()['question']
-    question_text = tb_resp['body'][1:-1]
-    answer = tb_resp['response']
-    category = tb_resp['category']['name']
-    value = tb_resp['value']
+    logger.debug('initiating question retrieval')
+
+    tb_resp = requests.get('{}questions/random.json'.format(api_endpoint))
+
+    logger.debug('jeopardy api status code: {}'.format(tb_resp.status_code))
+
+    json_resp = tb_resp.json()['question']
+    question_text = json_resp['body'][1:-1]
+    answer = json_resp['response']
+    category = json_resp['category']['name']
+    value = json_resp['value']
+
+    logger.debug('psst! the answer is: {}'.format(answer))
 
     db.jeopardy.insert({
         'question': question_text,
@@ -152,10 +167,9 @@ def retrieve_question(client, channel):
         'active': True,
     })
 
-    if DEBUG:
-        client.msg(channel, '[{}]'.format(answer))
-
     question = '[{}] For ${}: {}'.format(category, value, question_text)
+
+    logger.debug('will reveal answer in {} seconds'.format(ANSWER_DELAY))
 
     reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, question_text, answer)
 
@@ -178,18 +192,23 @@ def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_ques
 
     # if we have an active question, and args, evaluate the answer
 
+    logger.debug('command #triggered')
+
     question = mongo_db.find_one({
         'channel': channel,
         'active': True,
     })
 
     if question and args:
+
+        logger.debug('found active question')
+
         correct, partial, ratio = eval_potential_answer(args, question['answer'])
 
-        if DEBUG:
-            client.msg(channel, 'ratio = {}'.format(ratio))
-
         if correct:
+
+            logger.debug('answer is correct!')
+
             mongo_db.update({
                 'question': question['question'],
             }, {'$set': {
@@ -205,9 +224,11 @@ def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_ques
         return
 
     if question and not args:
+        logger.debug('no answer provided :/')
         return
 
     if not question and args:
+        logger.debug('no active question :/')
         return
 
     question_text = quest_func(client, channel)
