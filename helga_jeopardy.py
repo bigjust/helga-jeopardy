@@ -1,3 +1,4 @@
+import datetime
 import nltk
 import random
 import requests
@@ -222,6 +223,7 @@ def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_ques
             }, {'$set': {
                 'active': False,
                 'answered_by': nick,
+                'timestamp': datetime.datetime.utcnow(),
             }})
 
             return random.choice(correct_responses).format(nick)
