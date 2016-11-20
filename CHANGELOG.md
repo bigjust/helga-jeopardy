@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.2] - 2016-11-20
+### Fixed
+- fixed quoting in usage
+
+## [0.3.1] - 2016-11-20
+### Fixed
+- issue with leaderboard and requesting nick
+
+## [0.3.0] - 2016-11-20
+### Added
+- top 3 players in last week, and requesting user's score
+
 ## [0.2.4] - 2016-11-20
 ### Changed
 - track timestamp of answer, for date range-based leaderboards
