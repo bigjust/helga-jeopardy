@@ -28,6 +28,10 @@ class TestAnswerMatching(unittest.TestCase):
         self.answer = 'penny'
         self.assertAnswer('pennies')
 
+    def test_stopword(self):
+        self.answer = 'the pen'
+        self.assertAnswer('pen')
+
     def test_remove_punctuation(self):
         self.answer = 'Baby, I Love Your Way'
         self.assertAnswer('ooh baby i love your way')
@@ -49,7 +53,7 @@ class TestAnswerMatching(unittest.TestCase):
             'One Flew Over the Cuckoo\'s Nest'
         )
 
-        self.assertEqual(partial, 3)
+        self.assertEqual(partial, 2)
         self.assertFalse(correct)
 
     def test_ratio_match(self):

@@ -6,6 +6,7 @@ import string
 
 from difflib import SequenceMatcher
 
+from nltk.corpus import stopwords
 from nltk.stem.snowball import EnglishStemmer
 
 from twisted.internet import reactor
@@ -95,7 +96,14 @@ def eval_potential_answer(input_line, answer):
     stemmer = EnglishStemmer()
 
     input_tokens = [process_token(token) for token in input_line]
-    answer_tokens = [process_token(token) for token in answer.split()]
+    processed_answer_tokens = [process_token(token) for token in answer.split()]
+    answer_tokens = []
+
+    for tok in processed_answer_tokens:
+        if tok not in stopwords.words('english'):
+            answer_tokens.append(tok)
+
+    # remove stopwords from answer_tokens
 
     matched = set(input_tokens).intersection(set(answer_tokens))
     partial = len(matched)
