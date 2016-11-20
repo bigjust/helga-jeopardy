@@ -221,6 +221,7 @@ def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_ques
                 'question': question['question'],
             }, {'$set': {
                 'active': False,
+                'answered_by': nick,
             }})
 
             return random.choice(correct_responses).format(nick)
