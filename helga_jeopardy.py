@@ -204,23 +204,21 @@ def scores(client, channel, nick):
     ]
 
     leaderboard = [leader_obj for leader_obj in db.jeopardy.aggregate(pipeline)]
-    append_nick = True
     rank = 1
 
     for leader in leaderboard:
 
-        client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], leader['money']))
-        rank += 1
-
-        logger.debug('comparing {} with {}'.format(
-            leader['_id'], nick
-        ))
+        if rank < 4:
+            client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], leader['money']))
 
         if leader['_id'] == nick:
-            append_nick = False
+            if rank >= 4:
+                client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], leader['money']))
+
+        rank += 1
 
     if append_nick:
-        client.msg(channel, "{} -- {}".format(leader['_id'], leader['money']))
+
 
 
 @command('j', help='usage "j [<response>|score]"')
