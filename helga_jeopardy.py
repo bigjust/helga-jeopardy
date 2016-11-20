@@ -217,9 +217,6 @@ def scores(client, channel, nick):
 
         rank += 1
 
-    if append_nick:
-
-
 
 @command('j', help='usage: ,j [<response>|score]')
 def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_question, mongo_db=db.jeopardy):
