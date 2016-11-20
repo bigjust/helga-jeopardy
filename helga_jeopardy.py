@@ -5,6 +5,8 @@ import requests
 import smokesignal
 import string
 
+from bson.son import SON
+
 from difflib import SequenceMatcher
 
 from nltk.corpus import stopwords
@@ -184,7 +186,44 @@ def retrieve_question(client, channel):
 
     return question
 
-@command('j', help='jeopardy!')
+def scores(client, channel, nick):
+    """
+    Returns top 3 scores in past week, plus the score of requesting
+    nick, if the requesting nick is not in the top 3.
+    """
+
+    start_date = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+
+    pipeline = [
+        {'$match': {
+            'channel': channel,
+            'timestamp': {'$gte': start_date },
+        }},
+        { '$group': {'_id': '$answered_by', 'money': {'$sum': '$value' }}},
+        { '$sort': SON([('money', -1), ('_id', -1)])}
+    ]
+
+    leaderboard = [leader_obj for leader_obj in db.jeopardy.aggregate(pipeline)]
+    append_nick = True
+    rank = 1
+
+    for leader in leaderboard:
+
+        client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], leader['money']))
+        rank += 1
+
+        logger.debug('comparing {} with {}'.format(
+            leader['_id'], nick
+        ))
+
+        if leader['_id'] == nick:
+            append_nick = False
+
+    if append_nick:
+        client.msg(channel, "{} -- {}".format(leader['_id'], leader['money']))
+
+
+@command('j', help='usage "j [<response>|score]"')
 def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_question, mongo_db=db.jeopardy):
     """
     Asks a question if there is no active question in the channel.
@@ -197,7 +236,13 @@ def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_ques
 
     On the first correct response, deactivate the question and report
     the correct response (w/ nick).
+
+    if the command 'score' is given, prints simple leaderboard
+
     """
+
+    if args and args[0] == 'score':
+        return scores(client, channel, nick)
 
     # if we have an active question, and args, evaluate the answer
 

@@ -1,12 +1,12 @@
 from setuptools import setup, find_packages
 
-version = '0.2.4'
+version = '0.3.0'
 
 setup(name="helga-jeopardy",
       version=version,
       description=('HALP'),
       classifiers=[
-          'Development Status :: 3 - Alpha',
+          'Development Status :: 4 - Beta',
           'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
           'Operating System :: OS Independent',
           'Programming Language :: Python',
