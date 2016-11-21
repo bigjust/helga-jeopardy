@@ -208,12 +208,15 @@ def scores(client, channel, nick):
 
     for leader in leaderboard:
 
+        money = leader['money']
+        money = ('${:%d,.0f}'%(len(str(money))+1)).format(abs(money)).lstrip()
+
         if rank < 4:
-            client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], leader['money']))
+            client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], money))
 
         if leader['_id'] == nick:
             if rank >= 4:
-                client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], leader['money']))
+                client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], money))
 
         rank += 1
 
