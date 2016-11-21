@@ -1,6 +1,7 @@
 import datetime
 import nltk
 import random
+import re
 import requests
 import smokesignal
 import string
@@ -83,6 +84,16 @@ def eval_potential_answer(input_line, answer):
     `ratio`: ratio of matching characters
 
     """
+
+    pot_answers = re.findall(r'\([^()]*\)|[^()]+', answer)
+
+    if len(pot_answers) == 2:
+        for pot_answer in pot_answers:
+            pot_answer = pot_answer.replace('(','').replace(')','')
+            correct, _, _ = eval_potential_answer(input_line, pot_answer)
+
+            if correct:
+                return correct, None, None
 
     correct = False
     partial = 0

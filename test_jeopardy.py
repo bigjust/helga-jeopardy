@@ -39,6 +39,11 @@ class TestAnswerMatching(unittest.TestCase):
         self.answer = 'John F. Kennedy'
         self.assertAnswer('john f kennedy')
 
+    def test_or_parens(self):
+        self.answer = 'the disciples (or apostles)'
+        self.assertAnswer('disciples')
+        self.assertAnswer('apostles')
+
     def test_partial_match(self):
         correct, partial, _ = eval_potential_answer(
             ['kennedy'],
