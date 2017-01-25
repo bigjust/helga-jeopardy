@@ -52,21 +52,17 @@ def process_token(token):
     """
     stuff we do to every token, both answer and responses.
 
-    1. lowercase
+    1. cast to unicode and lower case
     2. remove punctuation
     3. stem
 
     """
 
-    # lowercase
-    token = token.lower()
+    # cast to unicode and lower case
+    token = u'{}'.format(token).lower()
 
-    # punctuation
-    if isinstance(token, str):
-        token = token.translate(string.maketrans('',''), string.punctuation)
-
-    if isinstance(token, unicode):
-        token = token.translate(remove_punctuation_map)
+    # remove punctuation
+    token = token.translate(remove_punctuation_map)
 
     # stem
     stemmer = EnglishStemmer()
@@ -99,7 +95,7 @@ def eval_potential_answer(input_line, answer):
     partial = 0
     ratio = 0.0
 
-    input_string = ' '.join(input_line)
+    input_string = u''.join(input_line)
 
     sequence_matcher = SequenceMatcher(None, input_string, answer)
     ratio = sequence_matcher.ratio()
@@ -149,7 +145,7 @@ def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
         logger.debug('no active question, someone must have answered it! Good Show!')
         return
 
-    client.msg(channel, 'the correct answer is: {}'.format(answer))
+    client.msg(channel, u'the correct answer is: {}'.format(answer))
 
     mongo_db.update({
         'channel': channel,
