@@ -164,9 +164,10 @@ def retrieve_question(client, channel):
 
     logger.debug('initiating question retrieval')
 
-    tb_resp = requests.get('{}questions/random.json'.format(api_endpoint))
-
-    logger.debug('jeopardy api status code: {}'.format(tb_resp.status_code))
+    try:
+        tb_resp = requests.get('{}questions/random.json'.format(api_endpoint))
+    except RequestException:
+        return "Could not retrieve a question from the TrivialBuzz API"
 
     json_resp = tb_resp.json()['question']
     question_text = json_resp['body'][1:-1]
