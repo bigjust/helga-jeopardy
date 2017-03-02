@@ -224,13 +224,15 @@ def scores(client, channel, nick):
 
         if leader['_id'] == nick:
             if rank >= 4:
+                # i see you getting all judgey
                 client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], money))
 
         rank += 1
 
 
 @command('j', help='usage: ,j [<response>|score]')
-def jeopardy(client, channel, nick, message, cmd, args, quest_func=retrieve_question, mongo_db=db.jeopardy):
+def jeopardy(client, channel, nick, message, cmd, args,
+             quest_func=retrieve_question, mongo_db=db.jeopardy):
     """
     Asks a question if there is no active question in the channel.
 
