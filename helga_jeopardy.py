@@ -14,6 +14,7 @@ from bson.son import SON
 from difflib import SequenceMatcher
 from nltk.corpus import stopwords
 from nltk.stem.snowball import EnglishStemmer
+from requests.exceptions import RequestException
 from twisted.internet import reactor
 
 logger = log.getLogger(__name__)
