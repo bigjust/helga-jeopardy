@@ -6,18 +6,15 @@ import requests
 import smokesignal
 import string
 
-from bson.son import SON
-
-from difflib import SequenceMatcher
-
-from nltk.corpus import stopwords
-from nltk.stem.snowball import EnglishStemmer
-
-from twisted.internet import reactor
-
 from helga import settings, log
 from helga.db import db
 from helga.plugins import command
+
+from bson.son import SON
+from difflib import SequenceMatcher
+from nltk.corpus import stopwords
+from nltk.stem.snowball import EnglishStemmer
+from twisted.internet import reactor
 
 logger = log.getLogger(__name__)
 
