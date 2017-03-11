@@ -198,6 +198,11 @@ def scores(client, channel, nick, alltime=False):
     nick, if the requesting nick is not in the top 3.
     """
 
+    max_number = 3
+
+    if alltime:
+        max_number = 5
+
     pipeline = [
         {'$match': {
             'channel': channel,
@@ -229,11 +234,11 @@ def scores(client, channel, nick, alltime=False):
         money = leader['money']
         money = ('${:%d,.0f}'%(len(str(money))+1)).format(abs(money)).lstrip()
 
-        if rank < 4:
+        if rank < max_number + 1:
             client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], money))
 
         if leader['_id'] == nick:
-            if rank >= 4:
+            if rank >= max_number + 1:
                 # i see you getting all judgey
                 client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], money))
 
