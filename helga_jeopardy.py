@@ -192,27 +192,39 @@ def retrieve_question(client, channel):
 
     return question
 
-def scores(client, channel, nick):
+def scores(client, channel, nick, alltime=False):
     """
     Returns top 3 scores in past week, plus the score of requesting
     nick, if the requesting nick is not in the top 3.
     """
 
-    start_date = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-
     pipeline = [
         {'$match': {
             'channel': channel,
-            'timestamp': {'$gte': start_date },
         }},
         { '$group': {'_id': '$answered_by', 'money': {'$sum': '$value' }}},
         { '$sort': SON([('money', -1), ('_id', -1)])}
     ]
 
+    title = "Jeopardy Leaderboard"
+
+    if not alltime:
+        title += " (Past 7 Days)"
+        start_date = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        pipeline[0]['$match']['timestamp'] = {'$gte': start_date }
+    else:
+        title += " Hall of Game"
+
     leaderboard = [leader_obj for leader_obj in db.jeopardy.aggregate(pipeline)]
     rank = 1
 
+    if len(leaderboard):
+        client.msg(channel, title)
+
     for leader in leaderboard:
+
+        if leader['_id'] is None:
+            continue
 
         money = leader['money']
         money = ('${:%d,.0f}'%(len(str(money))+1)).format(abs(money)).lstrip()
@@ -248,7 +260,11 @@ def jeopardy(client, channel, nick, message, cmd, args,
     """
 
     if args and args[0] == 'score':
-        return scores(client, channel, nick)
+        alltime = False
+        if len(args) > 1 and args[1] == 'all':
+            alltime = True
+
+        return scores(client, channel, nick, alltime=alltime)
 
     # if we have an active question, and args, evaluate the answer
 
