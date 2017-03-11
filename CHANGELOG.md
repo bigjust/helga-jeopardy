@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.9] - 2017-03-11
+### Added
+- added title to leaderboard
+- score subcommand 'all' which will show the all time leaderboard
+
 ## [0.3.8] - 2017-03-02
 ### Fixed
 - Missing import for RequestException (stupid stupid stupid)
