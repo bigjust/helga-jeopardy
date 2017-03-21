@@ -116,8 +116,8 @@ def eval_potential_answer(input_line, answer):
     matched = set(input_tokens).intersection(set(answer_tokens))
     partial = len(matched)
 
-    logger.debug('matched: {}'.format(matched))
-    logger.debug('ratio: {}'.format(ratio))
+    logger.debug(u'matched: {}'.format(matched))
+    logger.debug(u'ratio: {}'.format(ratio))
 
     if len(matched) == len(answer_tokens):
         correct = True
@@ -174,7 +174,7 @@ def retrieve_question(client, channel):
     value = json_resp['value']
 
     if DEBUG:
-        logger.debug('psst! the answer is: {}'.format(answer))
+        logger.debug(u'psst! the answer is: {}'.format(answer))
 
     db.jeopardy.insert({
         'question': question_text,
@@ -184,9 +184,9 @@ def retrieve_question(client, channel):
         'active': True,
     })
 
-    question = '[{}] For ${}: {}'.format(category, value, question_text)
+    question = u'[{}] For ${}: {}'.format(category, value, question_text)
 
-    logger.debug('will reveal answer in {} seconds'.format(ANSWER_DELAY))
+    logger.debug(u'will reveal answer in {} seconds'.format(ANSWER_DELAY))
 
     reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, question_text, answer)
 
@@ -232,15 +232,15 @@ def scores(client, channel, nick, alltime=False):
             continue
 
         money = leader['money']
-        money = ('${:%d,.0f}'%(len(str(money))+1)).format(abs(money)).lstrip()
+        money = (u'${:%d,.0f}'%(len(str(money))+1)).format(abs(money)).lstrip()
 
         if rank < max_number + 1:
-            client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], money))
+            client.msg(channel, u"{}. {} -- {}".format(rank, leader['_id'], money))
 
         if leader['_id'] == nick:
             if rank >= max_number + 1:
                 # i see you getting all judgey
-                client.msg(channel, "{}. {} -- {}".format(rank, leader['_id'], money))
+                client.msg(channel, u"{}. {} -- {}".format(rank, leader['_id'], money))
 
         rank += 1
 
@@ -301,7 +301,7 @@ def jeopardy(client, channel, nick, message, cmd, args,
             return random.choice(correct_responses).format(nick)
 
         if partial > 0:
-            return "{}, can you be more specific?".format(nick)
+            return u"{}, can you be more specific?".format(nick)
 
         # wrong answer, ignore
         return
