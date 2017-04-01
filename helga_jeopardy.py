@@ -273,9 +273,11 @@ def jeopardy(client, channel, nick, message, cmd, args,
 
         return scores(client, channel, nick, alltime=alltime)
 
-    # if we have an active question, and args, evaluate the answer
+    if len(args) == 1 and args[0] == 'reset':
+        reset_channel(channel, mongo_db)
+        return 'done'
 
-    logger.debug('command #triggered')
+    # if we have an active question, and args, evaluate the answer
 
     question = mongo_db.find_one({
         'channel': channel,
