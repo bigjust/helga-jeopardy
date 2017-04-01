@@ -124,7 +124,7 @@ def eval_potential_answer(input_line, answer):
 
     return correct, partial, ratio
 
-def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
+def reveal_answer(client, channel, question_id, answer, mongo_db=db.jeopardy):
     """
     This is the timer, essentially. When this point is reached, no more
     answers will be accepted, and our gracious host will reveal the
@@ -134,19 +134,21 @@ def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
     logger.debug('time to reveal the answer, if no one has guess')
 
     question = mongo_db.find_one({
-        'channel': channel,
-        'active': True,
+        '_id': question_id,
     })
 
     if not question:
-        logger.debug('no active question, someone must have answered it! Good Show!')
+        logger.warning('no question found, not good')
+        return
+
+    if not question['active']:
+        logger.debug('not active question, someone must have answered it! Good Show!')
         return
 
     client.msg(channel, u'the correct answer is: {}'.format(answer))
 
     mongo_db.update({
-        'channel': channel,
-        'active': True,
+        '_id': question_id,
     }, {
         '$set': {
             'active': False,
@@ -178,7 +180,7 @@ def retrieve_question(client, channel):
     if DEBUG:
         logger.debug(u'psst! the answer is: {}'.format(answer))
 
-    db.jeopardy.insert({
+    question_id = db.jeopardy.insert({
         'question': question_text,
         'answer': answer,
         'channel': channel,
@@ -190,7 +192,7 @@ def retrieve_question(client, channel):
 
     logger.debug(u'will reveal answer in {} seconds'.format(ANSWER_DELAY))
 
-    reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, question_text, answer)
+    reactor.callLater(ANSWER_DELAY, reveal_answer, client, channel, question_id, answer)
 
     return question
 

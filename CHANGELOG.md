@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.12] - 2017-04-01
+### Fixed
+- use question_id to query questions (novel idea, i know)
+
 ## [0.3.11] - 2017-03-31
 ### Added
 - reset command

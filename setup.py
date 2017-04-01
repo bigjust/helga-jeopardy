@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '0.3.11'
+version = '0.3.12'
 
 setup(name="helga-jeopardy",
       version=version,
