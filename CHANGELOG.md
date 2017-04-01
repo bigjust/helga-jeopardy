@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.11] - 2017-03-31
+### Added
+- reset command
+### Fixed
+- don't use question text for mongo queries
+
+## [0.3.10] - 2017-03-21
+### Fixed
+- unicode issues (hopefully)
+
 ## [0.3.9] - 2017-03-11
 ### Added
 - added title to leaderboard
