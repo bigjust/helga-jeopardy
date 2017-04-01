@@ -136,7 +136,6 @@ def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
     question = mongo_db.find_one({
         'channel': channel,
         'active': True,
-        'question': question_text,
     })
 
     if not question:
@@ -147,9 +146,12 @@ def reveal_answer(client, channel, question_text, answer, mongo_db=db.jeopardy):
 
     mongo_db.update({
         'channel': channel,
-        'question': question_text,
-    }, { '$set': { 'active': False, }})
-
+        'active': True,
+    }, {
+        '$set': {
+            'active': False,
+        }
+    })
 
 def retrieve_question(client, channel):
     """
@@ -291,12 +293,15 @@ def jeopardy(client, channel, nick, message, cmd, args,
             logger.debug('answer is correct!')
 
             mongo_db.update({
-                'question': question['question'],
-            }, {'$set': {
-                'active': False,
-                'answered_by': nick,
-                'timestamp': datetime.datetime.utcnow(),
-            }})
+                'active': True,
+                'channel': channel,
+            }, {
+                '$set': {
+                    'active': False,
+                    'answered_by': nick,
+                    'timestamp': datetime.datetime.utcnow(),
+                }
+            })
 
             return random.choice(correct_responses).format(nick)
 
