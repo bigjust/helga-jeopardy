@@ -268,6 +268,9 @@ def jeopardy(client, channel, nick, message, cmd, args,
 
     """
 
+    if (channel,) not in settings.CHANNELS:
+        return
+
     if args and args[0] == 'score':
         alltime = False
         if len(args) > 1 and args[1] == 'all':
@@ -330,6 +333,6 @@ def jeopardy(client, channel, nick, message, cmd, args,
 
 @smokesignal.on('join')
 def back_from_commercial(client, channel):
-
-    reset_channel(channel)
-    client.msg(channel, 'aaaand we\'re back!')
+    if (channel,) in settings.CHANNELS:
+        reset_channel(channel)
+        client.msg(channel, 'aaaand we\'re back!')
