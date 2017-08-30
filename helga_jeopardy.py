@@ -329,10 +329,3 @@ def jeopardy(client, channel, nick, message, cmd, args,
     question_text = quest_func(client, channel)
 
     return question_text
-
-
-@smokesignal.on('join')
-def back_from_commercial(client, channel):
-    if (channel,) in settings.CHANNELS:
-        reset_channel(channel)
-        client.msg(channel, 'aaaand we\'re back!')
