@@ -268,6 +268,9 @@ def jeopardy(client, channel, nick, message, cmd, args,
 
     """
 
+    if (channel,) not in settings.CHANNELS:
+        return
+
     if args and args[0] == 'score':
         alltime = False
         if len(args) > 1 and args[1] == 'all':
