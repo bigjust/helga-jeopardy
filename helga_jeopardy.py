@@ -21,6 +21,7 @@ logger = log.getLogger(__name__)
 
 DEBUG = getattr(settings, 'HELGA_DEBUG', False)
 ANSWER_DELAY = getattr(settings, 'JEOPARDY_ANSWER_DELAY', 30)
+CHANNEL_ANNOUNCEMENT = getattr(settings, 'JEOPARDY_JOIN_MESSAGE', '')
 
 api_endpoint = 'http://www.trivialbuzz.com/api/v1/'
 
@@ -331,4 +332,8 @@ def jeopardy(client, channel, nick, message, cmd, args,
 @smokesignal.on('join')
 def back_from_commercial(client, channel):
     logger.info('Joined %s, resetting jeopardy state', channel)
+
+    if CHANNEL_ANNOUNCEMENT:
+        client.msg(channel, CHANNEL_ANNOUNCEMENT)
+
     reset_channel(channel)

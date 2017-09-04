@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.14] - 2017-09-04
+### Fixed
+- re-add settings.CHANNELS check
+- all customization or omission of channel announcement
+
+## [0.3.13] - 2017-07-09
+### Fixed
+- confer with settings.CHANNELS before doing anything
+
 ## [0.3.12] - 2017-04-01
 ### Fixed
 - use question_id to query questions (novel idea, i know)
