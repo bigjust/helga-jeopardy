@@ -61,6 +61,11 @@ class TestAnswerMatching(unittest.TestCase):
         self.assertEqual(partial, 2)
         self.assertFalse(correct)
 
+        correct, partial, _ = eval_potential_answer(
+            ['earl', 'gray', 'tea'],
+            'earl grey tea',
+        )
+
     def test_ratio_match(self):
 
         correct, partial, ratio = eval_potential_answer(
