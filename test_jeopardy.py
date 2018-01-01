@@ -1,16 +1,14 @@
 from helga_jeopardy import jeopardy, eval_potential_answer
 
-import unittest
 
+class TestAnswerMatching(object):
 
-class TestAnswerMatching(unittest.TestCase):
-
-    def setUp(self):
+    def setup(self):
         self.answer = 'winston churchill'
 
     def assertAnswer(self, input_line):
         correct, _, _ = eval_potential_answer(input_line.split(), self.answer)
-        return self.assertTrue(correct)
+        assert correct
 
     def test_exact_match(self):
         self.assertAnswer('winston churchill')
@@ -50,21 +48,23 @@ class TestAnswerMatching(unittest.TestCase):
             'john f. kennedy'
         )
 
-        self.assertTrue(partial)
-        self.assertFalse(correct)
+        assert partial
+        assert not correct
 
         correct, partial, _ = eval_potential_answer(
             ['one', 'flew', 'over'],
             'One Flew Over the Cuckoo\'s Nest'
         )
 
-        self.assertEqual(partial, 2)
-        self.assertFalse(correct)
+        assert partial == 2
+        assert not correct
 
         correct, partial, _ = eval_potential_answer(
             ['earl', 'gray', 'tea'],
             'earl grey tea',
         )
+
+        assert correct
 
     def test_ratio_match(self):
 
@@ -73,5 +73,5 @@ class TestAnswerMatching(unittest.TestCase):
             'a man',
         )
 
-        self.assertTrue(correct)
-        self.assertEqual(ratio, 0.75)
+        assert correct
+        assert ratio == 0.75
