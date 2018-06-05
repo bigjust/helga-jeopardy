@@ -1,4 +1,4 @@
-from helga_jeopardy import jeopardy, eval_potential_answer
+from helga_jeopardy import jeopardy, eval_potential_answer, clean_question
 
 
 class TestAnswerMatching(object):
@@ -75,3 +75,20 @@ class TestAnswerMatching(object):
 
         assert correct
         assert ratio == 0.75
+
+    def test_clean_url(self):
+        question = "what is a http://test.com/?"
+        result_question, contexts = clean_question(question)
+
+        assert result_question == "what is a"
+        assert len(contexts) == 1
+        assert contexts[0] == "http://test.com/?"
+
+    def test_clean_multiple_urls(self):
+        question = "this is a thing http://abc.com/b.gif and this is also a thing https://internet.org/a.jpg"
+        result_question, contexts = clean_question(question)
+
+        assert result_question == "this is a thing  and this is also a thing"
+        assert len(contexts) == 2
+        assert contexts[0] == "http://abc.com/b.gif"
+        assert contexts[1] == "https://internet.org/a.jpg"

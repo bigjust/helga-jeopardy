@@ -199,6 +199,24 @@ def retrieve_question(client, channel):
 
     return question
 
+
+def clean_question(question):
+    """
+    Cleans question text.
+    :param question: The raw question text.
+    :return: A 2-tuple of the shape (<Resulting question>, <List of contextual messages to send before the question>)
+    """
+    contexts = []
+    result = question
+
+    url_matches = re.findall(URL_RE, question)
+    if any(url_matches):
+        result = re.sub(URL_RE, "", question)
+        contexts += url_matches
+
+    return result.strip(), contexts
+
+
 def scores(client, channel, nick, alltime=False):
     """
     Returns top 3 scores in past week, plus the score of requesting
@@ -328,14 +346,11 @@ def jeopardy(client, channel, nick, message, cmd, args,
 
     question_text = quest_func(client, channel)
 
-    url_matches = re.findall(URL_RE, question_text)
-    if any(url_matches):
-        question_text = re.sub(URL_RE, "", question_text)
+    result, context_messages = clean_question(question_text)
+    for m in context_messages:
+        client.msg(channel, m)
 
-        for m in url_matches:
-            client.msg(channel, m)
-
-    return question_text
+    return result
 
 
 @smokesignal.on('join')
