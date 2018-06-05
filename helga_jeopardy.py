@@ -23,6 +23,8 @@ DEBUG = getattr(settings, 'HELGA_DEBUG', False)
 ANSWER_DELAY = getattr(settings, 'JEOPARDY_ANSWER_DELAY', 30)
 CHANNEL_ANNOUNCEMENT = getattr(settings, 'JEOPARDY_JOIN_MESSAGE', '')
 
+URL_RE = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+
 api_endpoint = 'http://www.trivialbuzz.com/api/v1/'
 
 correct_responses = [
@@ -325,6 +327,13 @@ def jeopardy(client, channel, nick, message, cmd, args,
         return
 
     question_text = quest_func(client, channel)
+
+    url_matches = re.findall(URL_RE, question_text)
+    if any(url_matches):
+        question_text = re.sub(URL_RE, "", question_text)
+
+        for m in url_matches:
+            client.msg(channel, m)
 
     return question_text
 
