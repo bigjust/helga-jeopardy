@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.15] - 2018-06-15
+### Added
+- pytest coverage + flakes checks
+### Changed
+- separate messages for urls found in messages, for formatting (thanks @zabracks)
+- automatically get nltk data
+
 ## [0.3.14] - 2017-09-04
 ### Fixed
 - re-add settings.CHANNELS check
