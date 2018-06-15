@@ -104,8 +104,6 @@ def eval_potential_answer(input_line, answer):
     if ratio >= 0.75:
         correct = True
 
-    stemmer = EnglishStemmer()
-
     input_tokens = [process_token(token) for token in input_line]
     processed_answer_tokens = [process_token(token) for token in answer.split()]
     answer_tokens = []

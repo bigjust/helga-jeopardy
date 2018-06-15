@@ -1,4 +1,4 @@
-from helga_jeopardy import jeopardy, eval_potential_answer, clean_question
+from helga_jeopardy import eval_potential_answer, clean_question
 
 
 class TestAnswerMatching(object):
