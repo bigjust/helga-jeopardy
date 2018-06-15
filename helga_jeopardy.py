@@ -23,6 +23,8 @@ DEBUG = getattr(settings, 'HELGA_DEBUG', False)
 ANSWER_DELAY = getattr(settings, 'JEOPARDY_ANSWER_DELAY', 30)
 CHANNEL_ANNOUNCEMENT = getattr(settings, 'JEOPARDY_JOIN_MESSAGE', '')
 
+URL_RE = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
+
 api_endpoint = 'http://www.trivialbuzz.com/api/v1/'
 
 correct_responses = [
@@ -197,6 +199,24 @@ def retrieve_question(client, channel):
 
     return question
 
+
+def clean_question(question):
+    """
+    Cleans question text.
+    :param question: The raw question text.
+    :return: A 2-tuple of the shape (<Resulting question>, <List of contextual messages to send before the question>)
+    """
+    contexts = []
+    result = question
+
+    url_matches = re.findall(URL_RE, question)
+    if any(url_matches):
+        result = re.sub(URL_RE, "", question)
+        contexts += url_matches
+
+    return result.strip(), contexts
+
+
 def scores(client, channel, nick, alltime=False):
     """
     Returns top 3 scores in past week, plus the score of requesting
@@ -326,7 +346,11 @@ def jeopardy(client, channel, nick, message, cmd, args,
 
     question_text = quest_func(client, channel)
 
-    return question_text
+    result, context_messages = clean_question(question_text)
+    for m in context_messages:
+        client.msg(channel, m)
+
+    return result
 
 
 @smokesignal.on('join')
