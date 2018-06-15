@@ -361,3 +361,5 @@ def back_from_commercial(client, channel):
         client.msg(channel, CHANNEL_ANNOUNCEMENT)
 
     reset_channel(channel)
+
+    nltk.download('stopwords')
